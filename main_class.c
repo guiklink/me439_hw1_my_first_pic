@@ -115,7 +115,7 @@ int main() {
     AD1CHSbits.CH0SA = 0;
     AD1CON1bits.ADON = 1;
 
-    //LATBSET = 0x80;
+    //LATBSET = 0x80;dsds
 
     while (1) {
         // invert pin every 0.5s, set PWM duty cycle % to the pot voltage output %
