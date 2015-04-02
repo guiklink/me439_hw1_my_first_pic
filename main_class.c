@@ -49,7 +49,7 @@
 // DEVCFG2 - get the CPU clock to 40MHz
 #pragma config FPLLIDIV = DIV_2 // divide input clock to be in range 4-5MHz
 #pragma config FPLLMUL = MUL_20 // multiply clock after FPLLIDIV
-#pragma config FPLLODIV = DIV_1 // divide clock after FPLLMUL to get 40MHz
+#pragma config FPLLODIV = DIV_2 // divide clock after FPLLMUL to get 40MHz
 #pragma config UPLLIDIV = DIV_2 // divide 8MHz input clock, then multiply by 12 to get 48MHz for USB
 #pragma config UPLLEN = ON      // USB clock on
 
@@ -66,19 +66,56 @@ int readADC(void);
 
 int main() {
 
-    // startup
+    /////////////////////////////// startup ////////////////////////////////
+
+    //Startup code to run as fast as possible and get pins back from bad defaults
+
+    __builtin_disable_interrupts();
+
+    // set the CP0 CONFIG register to indicate that
+    // kseg0 is cacheable (0x3) or uncacheable (0x2)
+    // see Chapter 2 "CPU for Devices with M4K Core"
+    // of the PIC32 reference manual
+    __builtin_mtc0(_CP0_CONFIG, _CP0_CONFIG_SELECT, 0xa4210583);
+
+    // no cache on this chip!
+
+    // 0 data RAM access wait states
+    BMXCONbits.BMXWSDRM = 0x0;
+
+    // enable multi vector interrupts
+    INTCONbits.MVEC = 0x1;
+
+    // disable JTAG to be able to use TDI, TDO, TCK, TMS as digital
+    DDPCONbits.JTAGEN = 0;
+
+    __builtin_enable_interrupts();
+
+    /////////////////////////////////////////////////////////////////////////
 
     // set up USER pin as input
 
+    ANSELBbits.ANSB13 = 0; // 0 for digital, 1 for analog
+    TRISBbits.TRISB13 = 1;  // USER is input
+
     // set up LED1 pin as a digital output
+    RPB7Rbits.RPB7R = 0b0001; // set B7 to U1TX
+    TRISBbits.TRISB7 = 0;
+    
+
 
     // set up LED2 as OC1 using Timer2 at 1kHz
+    ANSELBbits.ANSB15 = 0; // 0 for digital, 1 for analog
+    //For a peripheral that requires an output pin, use the RP(pin name)Rbits.RP(pin name)R to set the pin, using table 12-2 in Chapter 12
+    RPB15Rbits.RPB15R = 0b0101; // set B15 to U1TX
 
     // set up A0 as AN0
     ANSELAbits.ANSA0 = 1;
     AD1CON3bits.ADCS = 3;
     AD1CHSbits.CH0SA = 0;
     AD1CON1bits.ADON = 1;
+
+    //LATBSET = 0x80;
 
     while (1) {
         // invert pin every 0.5s, set PWM duty cycle % to the pot voltage output %

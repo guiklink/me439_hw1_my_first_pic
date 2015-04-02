@@ -5,7 +5,7 @@
             <name>my_first_pic</name>
             <creation-uuid>1e44d6c8-0b57-49d7-8971-93785581e70e</creation-uuid>
             <make-project-type>0</make-project-type>
-            <c-extensions/>
+            <c-extensions>c</c-extensions>
             <cpp-extensions/>
             <header-extensions/>
             <asminc-extensions/>
