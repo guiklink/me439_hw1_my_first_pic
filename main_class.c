@@ -117,8 +117,34 @@ int main() {
 
     //LATBSET = 0x80;
 
-    while (1) {
+    //////////////////////////// Initialize timers ////////////////////////////
+
+    T2CONbits.TCKPS = 1;     // Timer2 prescaler = 2
+    PR2 = 19999;              // ClockFrequency / PreScaler / Period = frequency in Hz
+    TMR2 = 0;                // initial TMR2 count is 0
+    OC1CONbits.OCM = 0b110;  // PWM mode without fault pin; other OC1CON bits are defaults
+    OC1CONbits.OCTSEL = 0;   // set Output compare timer select bit to use timer 2 as clock source
+    OC1RS = 0;               // duty cycle = OC1RS/(PR2+1) = 75%
+    OC1R = 0;                // initialize before turning OC1 on; afterward it is read-only
+    T2CONbits.ON = 1;        // turn on Timer2
+    OC1CONbits.ON = 1;       // turn on OC1
+
+    ///////////////////////////////////////////////////////////////////////////
+    //_CP0_SET_COUNT(0);       // init core timer
+    
+    while (1)
+    {
         // invert pin every 0.5s, set PWM duty cycle % to the pot voltage output %
+        _CP0_SET_COUNT(0); // set core timer to 0, remember it counts at half the CPU clock
+        LATBINV = 0x0080; // invert a pin
+        // wait for half a second, setting LED brightness to pot angle while waiting
+            while (_CP0_GET_COUNT() < 10000000)
+            {
+                OC1RS = readADC() * PR2/1024;
+                if (!PORTBbits.RB13) {
+                    LATBINV = 0x0080;
+                }
+            }
     }
 }
 
