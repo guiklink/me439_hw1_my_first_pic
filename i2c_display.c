@@ -157,6 +157,8 @@ void display_draw() {        // copies data to the gddram on the oled chip
 }
 
 void display_clear() {
+    row_current = ROW_0;
+    column_current = COLUMN_0;
   memset(gddram,0,SIZE);
 }
 
@@ -184,6 +186,13 @@ int getBin(int num, int *a)                 // transform from DEC to BIN in int[
 {
     int dec,i=0;
 	dec = num;
+	if(num == 0)
+	{
+		for(i=0;i<8;i++)
+		{
+			a[i] = 0;
+		}
+	}
     while(dec>0)
     {
     	a[i]=dec%2;
@@ -210,13 +219,13 @@ void display_write_byte_column(char col_byte)   // function to write a column by
 
 void display_write_char(char c)                 // writes a letter in the diplay
 {
-    char * c_byte = ASCII[c-20];
+    char * c_byte = ASCII[c-32];
 
     int i;
     char col_byte;
     for(i = 0; i < 5; i++)
     {
-        col_byte = c_byte + i;
+        col_byte = *(c_byte + i);
         display_write_byte_column(col_byte);
     }
 }

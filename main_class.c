@@ -134,9 +134,8 @@ int main() {
     //_CP0_SET_COUNT(0);       // init core timer
 
     display_init(); // initialize I2C2
-    display_pixel_set(5,5,1);
-    display_pixel_set(5,6,1);
-    display_pixel_set(5,7,1);
+    display_write_char('!');
+    //display_clear();
     display_draw();
 
     while (1)
