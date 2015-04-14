@@ -185,7 +185,7 @@ void display_write_byte_column(char col_byte)
 
 }
 
-void display_write_char(char c)
+void display_write_char(char c)                 // writes a letter in the diplay
 {
     char * c_byte = ASCII[c-20];
 
@@ -194,6 +194,6 @@ void display_write_char(char c)
     for(i = 0; i < 5; i++)
     {
         col_byte = c_byte + i;
-
+        display_write_byte_column(col_byte);
     }
 }
