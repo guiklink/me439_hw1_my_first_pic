@@ -243,3 +243,16 @@ void display_write_char(char c)                 // writes a letter in the diplay
         display_write_byte_column(col_byte);
     }
 }
+
+void display_write_string(char *s, int row, int column)     //writes a string on the given position
+{
+    row_current = row;
+    column_current = column;
+
+    int i = 0;
+    while(s[i])
+    {
+        display_write_char(s[i]);
+        i++;
+    }
+}

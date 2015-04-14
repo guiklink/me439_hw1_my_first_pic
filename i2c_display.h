@@ -28,5 +28,7 @@ int display_pixel_get(int row, int col);  // get the pixel at the given row and 
 
 void display_write_char(char c);                 // writes a letter in the diplay
 
+void display_write_string(char *s, int row, int column);     //writes a string on the given position
+
 #endif
 

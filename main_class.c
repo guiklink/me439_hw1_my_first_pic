@@ -133,9 +133,15 @@ int main() {
     ///////////////////////////////////////////////////////////////////////////
     //_CP0_SET_COUNT(0);       // init core timer
 
+    char buffer[20];
+    int number = 1337;
+
+    sprintf(buffer,"Hello world %d!",number);
+
     display_init(); // initialize I2C2
-    display_write_char('G');
+    //display_write_char('G');
     //display_clear();
+    display_write_string(buffer,28,32);
     display_draw();
 
     while (1)
