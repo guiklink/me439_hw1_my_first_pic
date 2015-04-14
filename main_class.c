@@ -6,7 +6,9 @@
  */
 
 #include<xc.h> // processor SFR definitions
-#include<sys/attribs.h> // __ISR macro
+#include<sys/attribs.h>
+
+#include "i2c_display.h" // __ISR macro
 
 ////////////////////////////// DEVCFGs here /////////////////////////////////
 /*These are the DEVCFG bits for the NU32 in standalone mode:
@@ -71,7 +73,6 @@ int main() {
     //Startup code to run as fast as possible and get pins back from bad defaults
 
     __builtin_disable_interrupts();
-
     // set the CP0 CONFIG register to indicate that
     // kseg0 is cacheable (0x3) or uncacheable (0x2)
     // see Chapter 2 "CPU for Devices with M4K Core"
@@ -131,7 +132,13 @@ int main() {
 
     ///////////////////////////////////////////////////////////////////////////
     //_CP0_SET_COUNT(0);       // init core timer
-    
+
+    display_init(); // initialize I2C2
+    display_pixel_set(5,5,1);
+    display_pixel_set(5,6,1);
+    display_pixel_set(5,7,1);
+    display_draw();
+
     while (1)
     {
         // invert pin every 0.5s, set PWM duty cycle % to the pot voltage output %
