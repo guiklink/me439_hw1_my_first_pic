@@ -182,33 +182,47 @@ int display_pixel_get(int row, int col) {
   return (gddram[pixel_pos(row,col)] & pixel_mask(row)) != 0;
 }
 
-int getBin(int num, int *a)                 // transform from DEC to BIN in int[] format and returns the size of the number
+void getBin8(int num, int *a)                 // transform from DEC to BIN in int[] format and returns the size of the number
 {
-    int dec,i=0;
+    int dec,i=0,j=0;
+    int result[8];
 	dec = num;
-	if(num == 0)
-	{
-		for(i=0;i<8;i++)
-		{
-			a[i] = 0;
-		}
-	}
     while(dec>0)
     {
-    	a[i]=dec%2;
+    	result[i]=dec%2;
         i++;
         dec=dec/2;
     }
-    return i;
+    for (j = 0; j < 8; j++)
+    {
+            if(j > 7-i)
+            {
+                    a[j] = result[8-j-1];
+            }
+    }
+}
+
+void invertBin8(int *a)
+{
+	int tmp[8];
+	int i;
+	for (i = 0; i < 8; ++i)
+	{
+		tmp[i] = a[i];
+	}
+	for (i = 0; i < 8; ++i)
+	{
+		a[i] = tmp[7-i];
+	}
 }
 
 
 void display_write_byte_column(char col_byte)   // function to write a column byte
 {
     int num = (int)col_byte;         // transform byte into a DEC
-    int bin[8];                // array for the BIN number
-    getBin(num, bin);
-
+    int bin[8] = {0,0,0,0,0,0,0,0};                // array for the BIN number
+    getBin8(num, bin);
+    invertBin8(bin);
     int i;
     for(i = 0; i<8; i++)
     {

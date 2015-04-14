@@ -134,7 +134,7 @@ int main() {
     //_CP0_SET_COUNT(0);       // init core timer
 
     display_init(); // initialize I2C2
-    display_write_char('!');
+    display_write_char('G');
     //display_clear();
     display_draw();
 
