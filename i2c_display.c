@@ -116,8 +116,8 @@ static const char ASCII[96][5] = {
 
 static unsigned char video_buffer[SIZE+1] = {0};          // buffer for sending over i2c. The first byte allows us to store the control character
 static unsigned char * gddram = video_buffer + 1;   // actual video ram. write pixels to gddram
-static int row = ROW_0;                                   // stores the row to write
-static int column = COLUMN_0;                             // stores the column to write
+static int row_current = ROW_0;                                   // stores the row to write
+static int column_current = COLUMN_0;                             // stores the column to write
 
 
 void display_command(unsigned char cmd) { // write a command to the display
@@ -148,8 +148,8 @@ void display_init() {
   video_buffer[0] = 0x40; // co = 0, dc =1, allows us to send data directly from video buffer,
                           //0x40 is the "next bytes have data" byte
 
-  static int row = ROW_0;                                   // stores the row to write
-  static int column = COLUMN_0;                             // stores the column to write
+  row_current = ROW_0;                                   // stores the row to write
+  column_current = COLUMN_0;                             // stores the column to write
 }
 
 void display_draw() {        // copies data to the gddram on the oled chip
@@ -180,9 +180,32 @@ int display_pixel_get(int row, int col) {
   return (gddram[pixel_pos(row,col)] & pixel_mask(row)) != 0;
 }
 
-void display_write_byte_column(char col_byte)
+int getBin(int num, int *a)                 // transform from DEC to BIN in int[] format and returns the size of the number
 {
+    int dec,i=0;
+	dec = num;
+    while(dec>0)
+    {
+    	a[i]=dec%2;
+        i++;
+        dec=dec/2;
+    }
+    return i;
+}
 
+
+void display_write_byte_column(char col_byte)   // function to write a column byte
+{
+    int num = (int)col_byte;         // transform byte into a DEC
+    int bin[8];                // array for the BIN number
+    getBin(num, bin);
+
+    int i;
+    for(i = 0; i<8; i++)
+    {
+        display_pixel_set(row_current+i,column_current,bin[i]);
+    }
+    column_current++;
 }
 
 void display_write_char(char c)                 // writes a letter in the diplay
