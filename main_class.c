@@ -155,10 +155,18 @@ int main() {
     char accel_x = 0;
     char accel_y = 0;
     char accel_z = 0;
-    int d_counter;
+    int d_counter = 0;
 
-    while(1)
+
+
+    while (1)
     {
+        // invert pin every 0.5s, set PWM duty cycle % to the pot voltage output %
+        _CP0_SET_COUNT(0); // set core timer to 0, remember it counts at half the CPU clock
+        LATBINV = 0x0080; // invert a pin
+        // wait for half a second, setting LED brightness to pot angle while waiting
+
+
         // read the accelerometer from all three axes
         // the accelerometer and the pic32 are both little endian by default (the lowest address has the LSB)
         // the accelerations are 16-bit twos compliment numbers, the same as a short
@@ -167,41 +175,26 @@ int main() {
         acc_read_register(OUT_X_L_M, (unsigned char *) mags, 6);
         // read the temperature data. Its a right justified 12 bit two's compliment number
         acc_read_register(TEMP_OUT_L, (unsigned char *) &temp, 2);
-        
 
         accel_x = accels[0];
         accel_y = accels[1];
         accel_z = accels[2];
         display_clear();
 
-        display_pixel_set(50,50,1);
-        display_pixel_set(50,51,1);
-        display_pixel_set(51,50,1);
-        display_pixel_set(51,51,1);
-        display_pixel_set(50,52,1);
-        for(d_counter = 0; d_counter < accel_x; d_counter++)
-        {
-            display_pixel_set(5,d_counter,1);
-        }
-        for(d_counter = 0; d_counter < accel_x; d_counter++)
-        {
-            display_pixel_set(10,d_counter,1);
-        }
-        for(d_counter = 0; d_counter < accel_x; d_counter++)
-        {
-            display_pixel_set(20,d_counter,1);
-        }
-        display_draw();
-        /*sprintf(buffer,"%d",accels[0]);
+        sprintf(buffer,"x: %d y: %d z: %d", accel_x, accel_y, accel_z);
         display_write_string(buffer,5,5);
-        sprintf(buffer,"%d",accels[1]);
-        display_write_string(buffer,14,5);
-        sprintf(buffer,"%d",accels[2]);
-        display_write_string(buffer,23,5);
-        display_draw();*/
 
+        display_draw();
+
+
+            while (_CP0_GET_COUNT() < 10000000)
+            {
+                OC1RS = readADC() * PR2/1024;
+                if (!PORTBbits.RB13) {
+                    LATBINV = 0x0080;
+                }
+            }
     }
-
 }
 
 int readADC(void) {

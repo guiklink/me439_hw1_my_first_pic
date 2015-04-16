@@ -7,7 +7,7 @@
 // SCK1 (B14)       -> SCL
 // some digital pin -> CS
 
-#define CS LATxbits.LATx# // replace x with some digital pin
+#define CS LATBbits.LATB10 // replace x with some digital pin
 
 // send a byte via spi and return the response
 unsigned char spi_io(unsigned char o) {
@@ -27,34 +27,33 @@ void acc_read_register(unsigned char reg, unsigned char data[], unsigned int len
   if(len > 1) {
     reg |= 0x40; // set the address auto increment bit (as per the accelerometer's protocol)
   }
-  PORTAbits.RA3 = 0;
+  CS = 0;
   spi_io(reg);
   for(i = 0; i != len; ++i) {
     data[i] = spi_io(0); // read data from spi
   }
-  PORTAbits.RA3 = 1;
+  CS = 1;
 }
 
 
 void acc_write_register(unsigned char reg, unsigned char data) {
-  PORTAbits.RA3 = 0;               // bring CS low to activate SPI
+  CS = 0;               // bring CS low to activate SPI
   spi_io(reg);
   spi_io(data);
-  PORTBbits.RB11 = 1;               // complete the command
+  CS = 1;               // complete the command
 }
 
 
 void acc_setup() {
-  TRISAbits.TRISA3 = 0; // set CS to output and digital to PORTB 11
-  PORTAbits.RA3 = 1;
+  TRISBbits.TRISB10 = 0; // set CS to output and digital to PORTB 10
+  CS = 1;
 
   // select a pin for SDI1
   SDI1Rbits.SDI1R = 0b000;  // Using RPA1
 
   // select a pin for SD01
-  //RPx#Rbits.RPx#R = 0bxxxx;
   RPB2Rbits.RPB2R = 0b0011; // Using RPB2
-
+  
   // Setup the master Master - SPI1
   // we manually control SS as a digital output
   // since the pic is just starting, we know that spi is off. We rely on defaults here
@@ -72,7 +71,7 @@ void acc_setup() {
   // set the accelerometer data rate to 1600 Hz. Do not update until we read values
   acc_write_register(CTRL1, 0xAF);
 
-    // set the accelerometer scale
+  // set the accelerometer scale
   acc_write_register(CTRL2, 0x00);
 
   // 50 Hz magnetometer, high resolution, temperature sensor on
@@ -80,8 +79,4 @@ void acc_setup() {
 
   // enable continuous reading of the magnetometer
   acc_write_register(CTRL7, 0x0);
-
-
 }
-
-
