@@ -27,32 +27,33 @@ void acc_read_register(unsigned char reg, unsigned char data[], unsigned int len
   if(len > 1) {
     reg |= 0x40; // set the address auto increment bit (as per the accelerometer's protocol)
   }
-  CS = 0;
+  PORTBbits.RB11 = 0;
   spi_io(reg);
   for(i = 0; i != len; ++i) {
     data[i] = spi_io(0); // read data from spi
   }
-  CS = 1;
+  PORTBbits.RB11 = 1;
 }
 
 
 void acc_write_register(unsigned char reg, unsigned char data) {
-  CS = 0;               // bring CS low to activate SPI
+  PORTBbits.RB11 = 0;               // bring CS low to activate SPI
   spi_io(reg);
   spi_io(data);
-  CS = 1;               // complete the command
+  PORTBbits.RB11 = 1;               // complete the command
 }
 
 
 void acc_setup() {
-  TRISxbits.TRISx# = 0; // set CS to output and digital if necessary
-  CS = 1;
+  TRISBbits.TRISB11 = 0; // set CS to output and digital to PORTB 11
+  PORTBbits.RB11 = 1;
 
   // select a pin for SDI1
-  SDI1Rbits.SDI1R = 0bxxxx;
+  SDI1Rbits.SDI1R = 0b000;  // Using RPA1
 
   // select a pin for SD01
-  RPx#Rbits.RPx#R = 0bxxxx;
+  //RPx#Rbits.RPx#R = 0bxxxx;
+  RPB2Rbits.RPB2R = 0b0011; // Using RPB2
 
   // Setup the master Master - SPI1
   // we manually control SS as a digital output
