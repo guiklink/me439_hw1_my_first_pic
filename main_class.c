@@ -166,23 +166,6 @@ int main() {
         LATBINV = 0x0080; // invert a pin
         // wait for half a second, setting LED brightness to pot angle while waiting
 
-        
-        // read the accelerometer from all three axes
-        // the accelerometer and the pic32 are both little endian by default (the lowest address has the LSB)
-        // the accelerations are 16-bit twos compliment numbers, the same as a short
-        acc_read_register(OUT_X_L_A, (unsigned char *) accels, 6);
-        // need to read all 6 bytes in one transaction to get an update.
-        acc_read_register(OUT_X_L_M, (unsigned char *) mags, 6);
-        // read the temperature data. Its a right justified 12 bit two's compliment number
-        acc_read_register(TEMP_OUT_L, (unsigned char *) &temp, 2);
-
-        accel_x = accels[0];
-        accel_y = accels[1];
-        accel_z = accels[2];
-        display_clear();
-
-        sprintf(buffer,"x: %d y: %d z: %d", accel_x*30/32000, accel_y*30/32000, accel_z*30/32000);
-        display_write_string(buffer,5,5);
 
         display_draw();
 
@@ -193,6 +176,24 @@ int main() {
                 if (!PORTBbits.RB13) {
                     LATBINV = 0x0080;
                 }
+
+
+                // read the accelerometer from all three axes
+                // the accelerometer and the pic32 are both little endian by default (the lowest address has the LSB)
+                // the accelerations are 16-bit twos compliment numbers, the same as a short
+                acc_read_register(OUT_X_L_A, (unsigned char *) accels, 6);
+                // need to read all 6 bytes in one transaction to get an update.
+                acc_read_register(OUT_X_L_M, (unsigned char *) mags, 6);
+                // read the temperature data. Its a right justified 12 bit two's compliment number
+                acc_read_register(TEMP_OUT_L, (unsigned char *) &temp, 2);
+
+                accel_x = accels[0];
+                accel_y = accels[1];
+                accel_z = accels[2];
+                display_clear();
+
+                sprintf(buffer,"x: %d y: %d z: %d", accel_x, accel_y, accel_z);
+                display_write_string(buffer,5,5);
             }
     }
 }
@@ -214,4 +215,5 @@ int readADC(void) {
     a = ADC1BUF0;
     return a;
 }
+
 

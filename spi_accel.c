@@ -49,9 +49,11 @@ void acc_setup() {
   CS = 1;
 
   // select a pin for SDI1
-  SDI1Rbits.SDI1R = 0b000;  // Using RPA1
+  ANSELAbits.ANSA1 = 0;
+  SDI1Rbits.SDI1R = 0b0000;  // Using RPA1
 
   // select a pin for SD01
+  ANSELBbits.ANSB2 = 0;
   RPB2Rbits.RPB2R = 0b0011; // Using RPB2
   
   // Setup the master Master - SPI1
@@ -72,7 +74,7 @@ void acc_setup() {
   acc_write_register(CTRL1, 0xAF);
 
   // set the accelerometer scale
-  acc_write_register(CTRL2, 0x00);
+  acc_write_register(CTRL2, 0x80);
 
   // 50 Hz magnetometer, high resolution, temperature sensor on
   acc_write_register(CTRL5, 0xF0);
