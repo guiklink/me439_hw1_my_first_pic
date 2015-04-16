@@ -27,17 +27,17 @@ void acc_read_register(unsigned char reg, unsigned char data[], unsigned int len
   if(len > 1) {
     reg |= 0x40; // set the address auto increment bit (as per the accelerometer's protocol)
   }
-  PORTBbits.RB11 = 0;
+  PORTAbits.RA3 = 0;
   spi_io(reg);
   for(i = 0; i != len; ++i) {
     data[i] = spi_io(0); // read data from spi
   }
-  PORTBbits.RB11 = 1;
+  PORTAbits.RA3 = 1;
 }
 
 
 void acc_write_register(unsigned char reg, unsigned char data) {
-  PORTBbits.RB11 = 0;               // bring CS low to activate SPI
+  PORTAbits.RA3 = 0;               // bring CS low to activate SPI
   spi_io(reg);
   spi_io(data);
   PORTBbits.RB11 = 1;               // complete the command
@@ -45,8 +45,8 @@ void acc_write_register(unsigned char reg, unsigned char data) {
 
 
 void acc_setup() {
-  TRISBbits.TRISB11 = 0; // set CS to output and digital to PORTB 11
-  PORTBbits.RB11 = 1;
+  TRISAbits.TRISA3 = 0; // set CS to output and digital to PORTB 11
+  PORTAbits.RA3 = 1;
 
   // select a pin for SDI1
   SDI1Rbits.SDI1R = 0b000;  // Using RPA1
@@ -73,7 +73,7 @@ void acc_setup() {
   acc_write_register(CTRL1, 0xAF);
 
     // set the accelerometer scale
-  acc_write_register(CTRL2, 0x80);
+  acc_write_register(CTRL2, 0x00);
 
   // 50 Hz magnetometer, high resolution, temperature sensor on
   acc_write_register(CTRL5, 0xF0);
