@@ -166,7 +166,7 @@ int main() {
         LATBINV = 0x0080; // invert a pin
         // wait for half a second, setting LED brightness to pot angle while waiting
 
-
+        
         // read the accelerometer from all three axes
         // the accelerometer and the pic32 are both little endian by default (the lowest address has the LSB)
         // the accelerations are 16-bit twos compliment numbers, the same as a short
@@ -181,7 +181,7 @@ int main() {
         accel_z = accels[2];
         display_clear();
 
-        sprintf(buffer,"x: %d y: %d z: %d", accel_x, accel_y, accel_z);
+        sprintf(buffer,"x: %d y: %d z: %d", accel_x*30/32000, accel_y*30/32000, accel_z*30/32000);
         display_write_string(buffer,5,5);
 
         display_draw();
