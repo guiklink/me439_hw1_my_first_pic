@@ -72,11 +72,16 @@ void acc_setup() {
   // set the accelerometer data rate to 1600 Hz. Do not update until we read values
   acc_write_register(CTRL1, 0xAF);
 
+    // set the accelerometer scale
+  acc_write_register(CTRL2, 0x80);
+
   // 50 Hz magnetometer, high resolution, temperature sensor on
   acc_write_register(CTRL5, 0xF0);
 
   // enable continuous reading of the magnetometer
   acc_write_register(CTRL7, 0x0);
+
+
 }
 
 

@@ -8,7 +8,8 @@
 #include<xc.h> // processor SFR definitions
 #include<sys/attribs.h>
 
-#include "i2c_display.h" // __ISR macro
+#include "i2c_display.h"
+#include "accel.h" // __ISR macro
 
 ////////////////////////////// DEVCFGs here /////////////////////////////////
 /*These are the DEVCFG bits for the NU32 in standalone mode:
@@ -136,13 +137,15 @@ int main() {
     char buffer[20];
     int number = 1337;
 
-    sprintf(buffer,"Hello world %d!",number);
+    //sprintf(buffer,"Hello world %d!",number);
 
     display_init(); // initialize I2C2
+    acc_setup();    // initialize accelerometer
+
     //display_write_char('G');
     //display_clear();
-    display_write_string(buffer,28,32);
-    display_draw();
+    //display_write_string(buffer,28,32);
+    //display_draw();
 
     while (1)
     {
