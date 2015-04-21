@@ -65,8 +65,10 @@
 
 /////////////////////////////////////////////////////////////////////////////
 
+#define ACCEL_AXIS_SCALE 30/3200
+
 int readADC(void);
-void accel_draw_axis(char x, char y);
+void accel_draw_axis(short x, short y);
 
 int main() {
 
@@ -187,13 +189,14 @@ int main() {
                 accel_y = accels[1];
                 accel_z = accels[2];
 
-                //  accel_draw_axis(accel_x,accel_y);
+                accel_draw_axis(accel_x,accel_y);
 
-                display_clear();
+                //Display accel values on the screen
+                /*display_clear();
 
-                sprintf(buffer,"x: %d y: %d z: %d", accel_x, accel_y, accel_z);
+                sprintf(buffer,"x: %d y: %d z: %d", accel_x*ACCEL_AXIS_SCALE, accel_y*ACCEL_AXIS_SCALE, accel_z*ACCEL_AXIS_SCALE);
                 display_write_string(buffer,5,5);
-                display_draw();
+                display_draw();*/
             }
     }
 }
@@ -216,61 +219,80 @@ int readADC(void) {
     return a;
 }
 
-#define ACCEL_AXIS_SCALE 30/32000
+
 #define DISPLAY_ALLIGNER 0
 #define DISPLAY_MAX_X 128
 #define DISPLAY_MAX_Y 64
 #define DISPLAY_CENTER_X DISPLAY_MAX_X/2
 #define DISPLAY_CENTER_Y DISPLAY_MAX_Y/2
 
-void accel_draw_axis(char x, char y)
+void accel_draw_axis(short x, short y)
 {
     display_clear();
 
-    x *= ACCEL_AXIS_SCALE;
-    y *= ACCEL_AXIS_SCALE;
+    short x_draw, y_draw;
+
+    x_draw = x * ACCEL_AXIS_SCALE;
+    y_draw = y * ACCEL_AXIS_SCALE;
 
     display_pixel_set(DISPLAY_CENTER_Y, DISPLAY_CENTER_X,1);
 
-    int i,isXNeg=0,isYNeg=0;
+    short i;
+    int isXNeg=0,isYNeg=0;
 
-    if(x < 0)
+    if(x_draw < 0)
     {
         isXNeg = 1;
-        x *= -1;
+        x_draw *= -1;
     }
-    if(x > DISPLAY_CENTER_X)
-            x = DISPLAY_CENTER_X;
+    if(x_draw > DISPLAY_CENTER_X)
+            x_draw = DISPLAY_CENTER_X;
 
-    if(y < 0)
+    if(y_draw < 0)
     {
         isYNeg = 1;
-        y *= -1;
+        y_draw *= -1;
     }
-    if(y > DISPLAY_CENTER_Y)
-            y = DISPLAY_CENTER_Y;
+    if(y_draw > DISPLAY_CENTER_Y)
+            y_draw = DISPLAY_CENTER_Y;
     
-    for(i = 1; i <= x; i++)
+    for(i = 1; i <= x_draw; i++)
     {
         if(isXNeg)
         {
+            display_pixel_set(DISPLAY_CENTER_Y - 2,DISPLAY_CENTER_X - i,1);
+            display_pixel_set(DISPLAY_CENTER_Y - 1,DISPLAY_CENTER_X - i,1);
             display_pixel_set(DISPLAY_CENTER_Y,DISPLAY_CENTER_X - i,1);
+            display_pixel_set(DISPLAY_CENTER_Y + 1,DISPLAY_CENTER_X - i,1);
+            display_pixel_set(DISPLAY_CENTER_Y + 2,DISPLAY_CENTER_X - i,1);
         }
         else
         {
+            display_pixel_set(DISPLAY_CENTER_Y - 2,DISPLAY_CENTER_X + i,1);
+            display_pixel_set(DISPLAY_CENTER_Y - 1,DISPLAY_CENTER_X + i,1);
             display_pixel_set(DISPLAY_CENTER_Y,DISPLAY_CENTER_X + i,1);
+            display_pixel_set(DISPLAY_CENTER_Y + 1,DISPLAY_CENTER_X + i,1);
+            display_pixel_set(DISPLAY_CENTER_Y + 2,DISPLAY_CENTER_X + i,1);
         }
     }
 
-    for(i = 1; i <= y; i++)
+    for(i = 1; i <= y_draw; i++)
     {
         if(isYNeg)
         {
+            display_pixel_set(DISPLAY_CENTER_Y - i,DISPLAY_CENTER_X - 2,1);
+            display_pixel_set(DISPLAY_CENTER_Y - i,DISPLAY_CENTER_X - 1,1);
             display_pixel_set(DISPLAY_CENTER_Y - i,DISPLAY_CENTER_X,1);
+            display_pixel_set(DISPLAY_CENTER_Y - i,DISPLAY_CENTER_X + 1,1);
+            display_pixel_set(DISPLAY_CENTER_Y - i,DISPLAY_CENTER_X + 2,1);
         }
         else
         {
+            display_pixel_set(DISPLAY_CENTER_Y + i,DISPLAY_CENTER_X - 2,1);
+            display_pixel_set(DISPLAY_CENTER_Y + i,DISPLAY_CENTER_X - 1,1);
             display_pixel_set(DISPLAY_CENTER_Y + i,DISPLAY_CENTER_X,1);
+            display_pixel_set(DISPLAY_CENTER_Y + i,DISPLAY_CENTER_X + 1,1);
+            display_pixel_set(DISPLAY_CENTER_Y + i,DISPLAY_CENTER_X + 2,1);
         }
     }
 
