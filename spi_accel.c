@@ -74,7 +74,7 @@ void acc_setup() {
   acc_write_register(CTRL1, 0xAF);
 
   // set the accelerometer scale
-  acc_write_register(CTRL2, 0x80);
+  acc_write_register(CTRL2, 0x00);
 
   // 50 Hz magnetometer, high resolution, temperature sensor on
   acc_write_register(CTRL5, 0xF0);

@@ -66,6 +66,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 int readADC(void);
+void accel_draw_axis(char x, char y);
 
 int main() {
 
@@ -152,10 +153,9 @@ int main() {
     display_draw();
 
     // Variables to draw in different axis
-    char accel_x = 0;
-    char accel_y = 0;
-    char accel_z = 0;
-    int d_counter = 0;
+    short accel_x = 0;
+    short accel_y = 0;
+    short accel_z = 0;
 
 
 
@@ -165,10 +165,6 @@ int main() {
         _CP0_SET_COUNT(0); // set core timer to 0, remember it counts at half the CPU clock
         LATBINV = 0x0080; // invert a pin
         // wait for half a second, setting LED brightness to pot angle while waiting
-
-
-        display_draw();
-
 
             while (_CP0_GET_COUNT() < 10000000)
             {
@@ -190,10 +186,14 @@ int main() {
                 accel_x = accels[0];
                 accel_y = accels[1];
                 accel_z = accels[2];
+
+                //  accel_draw_axis(accel_x,accel_y);
+
                 display_clear();
 
                 sprintf(buffer,"x: %d y: %d z: %d", accel_x, accel_y, accel_z);
                 display_write_string(buffer,5,5);
+                display_draw();
             }
     }
 }
@@ -216,4 +216,63 @@ int readADC(void) {
     return a;
 }
 
+#define ACCEL_AXIS_SCALE 30/32000
+#define DISPLAY_ALLIGNER 0
+#define DISPLAY_MAX_X 128
+#define DISPLAY_MAX_Y 64
+#define DISPLAY_CENTER_X DISPLAY_MAX_X/2
+#define DISPLAY_CENTER_Y DISPLAY_MAX_Y/2
 
+void accel_draw_axis(char x, char y)
+{
+    display_clear();
+
+    x *= ACCEL_AXIS_SCALE;
+    y *= ACCEL_AXIS_SCALE;
+
+    display_pixel_set(DISPLAY_CENTER_Y, DISPLAY_CENTER_X,1);
+
+    int i,isXNeg=0,isYNeg=0;
+
+    if(x < 0)
+    {
+        isXNeg = 1;
+        x *= -1;
+    }
+    if(x > DISPLAY_CENTER_X)
+            x = DISPLAY_CENTER_X;
+
+    if(y < 0)
+    {
+        isYNeg = 1;
+        y *= -1;
+    }
+    if(y > DISPLAY_CENTER_Y)
+            y = DISPLAY_CENTER_Y;
+    
+    for(i = 1; i <= x; i++)
+    {
+        if(isXNeg)
+        {
+            display_pixel_set(DISPLAY_CENTER_Y,DISPLAY_CENTER_X - i,1);
+        }
+        else
+        {
+            display_pixel_set(DISPLAY_CENTER_Y,DISPLAY_CENTER_X + i,1);
+        }
+    }
+
+    for(i = 1; i <= y; i++)
+    {
+        if(isYNeg)
+        {
+            display_pixel_set(DISPLAY_CENTER_Y - i,DISPLAY_CENTER_X,1);
+        }
+        else
+        {
+            display_pixel_set(DISPLAY_CENTER_Y + i,DISPLAY_CENTER_X,1);
+        }
+    }
+
+    display_draw();
+}
