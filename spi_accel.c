@@ -7,7 +7,7 @@
 // SCK1 (B14)       -> SCL
 // some digital pin -> CS
 
-#define CS LATBbits.LATB10 // replace x with some digital pin
+#define CS LATBbits.LATB4 // replace x with some digital pin
 
 // send a byte via spi and return the response
 unsigned char spi_io(unsigned char o) {
@@ -45,7 +45,7 @@ void acc_write_register(unsigned char reg, unsigned char data) {
 
 
 void acc_setup() {
-  TRISBbits.TRISB10 = 0; // set CS to output and digital to PORTB 10
+  TRISBbits.TRISB4 = 0; // set CS to output and digital to PORTB 10
   CS = 1;
 
   // select a pin for SDI1
